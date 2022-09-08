@@ -51,15 +51,9 @@ def generateKeys():
             break
 
     # Calculate d
-    k = 1
-    d = 0.1
-    while not d.is_integer():
-        d = (k * z + 1)/e
-        k+=1
-
-    d = int(d)
+    d = pow(e, -1, z)
     
-    print(f'p={p} q={q} e={e} d={d} N={N}')
+    # print(f'p={p} q={q} e={e} d={d} N={N}')
 
     print(f'pub ({e}, {N})')
     print(f'prv ({d}, {N})')
@@ -70,32 +64,12 @@ def encrypt(m , key):
     # m must be smaller than N
     e = key[0]
     N = key[1]
-    c = pow(m, e) % N
-    return c
+    return pow(m, e, N)
 
 def decrypt(c, key):
-    d = key[0]
-    N = key[1]
-    m = pow(c, d) % N
-    return m
+    return encrypt(c, key)
 
 if __name__ == "__main__":
     pub, prv = generateKeys()
     c = encrypt(16, pub)
     print(decrypt(c, prv))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

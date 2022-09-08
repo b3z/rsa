@@ -30,6 +30,7 @@ def primesInRange(x, y):
 def isPrime(e, z):
     return gcd(e, z) == 1
 
+# Generate a key pair
 def generateKeys():
     # Generate two different random primes 
     p, q = generateRandomPrimes()

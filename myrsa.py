@@ -46,7 +46,7 @@ def generateKeys():
     # Chose e which has to be relative prime to z (1 < e < z)
     e = 0
 
-    for i in range(2, z-1):
+    for i in range(z-2, 2, -1):
         if isPrime(i, z):
             e = i
             break

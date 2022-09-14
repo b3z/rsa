@@ -1,31 +1,40 @@
 import myrsa
 
 # Basis https://tls13.xargs.org
+# https://en.wikipedia.org/wiki/Diffie–Hellman_key_exchange
 
-def hello():
-    cpub, cprv = myrsa.generateKeys() # generate key pair of client
-    spub, sprv = myrsa.generateKeys() # generate key pair of server
+# Diffie–Hellman Key Exchange
+def dh():
+    cpub, cprv = myrsa.generateKeys()  # generate key pair of client
+    spub, sprv = myrsa.generateKeys()  # generate key pair of server
 
-    # xpub = cpub[0] * spub[1]
-    # ypub = cpub[1] * spub[0]
-    
-    xk = cpub * sprv 
+    p = cpub[0]
+    g = cpub[1]
 
-    print(cpub)
-    print(spub)
-    print('')
-    print(xk)
-    
-    # print(xpub)
-    # print(ypub)
+    a = cprv[0]
+    b = sprv[0]
 
-def ecm(x, y)
-    
+    # Begin
+    print("Public:")
+    print("p (shared prime)", p)
+    print("g (shared base)", g)
 
+    A = (g**a) % p
+    B = (g ** b) % p
+
+    print("\nExchange public:", A)
+    print("Exchange public:", B)
+
+
+    secretA = (B ** a) % p
+    secretB = (A**b) % p
+
+    print("independent shared secret:")
+    print("secretA ", secretA)
+    print("secretB", secretB)
 
 
 if __name__ == '__main__':
-    hello()
+    dh()
 
-    
-
+# TODO Next step is implementing this for a client and a server.

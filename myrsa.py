@@ -30,6 +30,7 @@ def primesInRange(x, y):
 def isPrime(e, z):
     return gcd(e, z) == 1
 
+# Generate a key pair
 def generateKeys():
     # Generate two different random primes 
     p, q = generateRandomPrimes()
@@ -45,7 +46,7 @@ def generateKeys():
     # Chose e which has to be relative prime to z (1 < e < z)
     e = 0
 
-    for i in range(2, z-1):
+    for i in range(z-2, 2, -1):
         if isPrime(i, z):
             e = i
             break

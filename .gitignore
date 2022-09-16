@@ -36,3 +36,5 @@ comment.cut
 
 # Vim swap files
 *.swp
+
+__pycache__/

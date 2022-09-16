@@ -19,7 +19,7 @@ def dh():
     print("p (shared prime)", p)
     print("g (shared base)", g)
 
-    A = (g**a) % p
+    A = (g ** a) % p
     B = (g ** b) % p
 
     print("\nExchange public:", A)
@@ -27,7 +27,7 @@ def dh():
 
 
     secretA = (B ** a) % p
-    secretB = (A**b) % p
+    secretB = (A ** b) % p
 
     print("independent shared secret:")
     print("secretA ", secretA)

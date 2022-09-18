@@ -56,8 +56,8 @@ def generateKeys():
     
     # print(f'p={p} q={q} e={e} d={d} N={N}')
 
-    print(f'pub ({e}, {N})')
-    print(f'prv ({d}, {N})')
+    # print(f'pub ({e}, {N})')
+    # print(f'prv ({d}, {N})')
 
     return ((e, N), (d, N))
 

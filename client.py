@@ -8,6 +8,11 @@ clKey = myrsa.generateKeys()
 clPublic = clKey[0]
 clPrivate = clKey[1]
 
+# We can easily pre calculate this for later.
+A = (clPublic[1] ** clPrivate[0]) % clPublic[0]
+
+sharedSecret = None
+
 
 def handleProtocol(data):
     print(f"Received {data}")
@@ -17,6 +22,15 @@ def handleProtocol(data):
         s.sendall(msg.encode())
     elif data.startswith('B '):
         print(data)
+
+        # Parse servers B
+        B = int(data.replace('B ', ''))
+        # Send our A
+        s.sendall(f'A {A}'.encode())
+        # calculate sharedSecret
+        sharedSecret = (B ** clPrivate[0]) % clPublic[0]
+        print(sharedSecret)
+
     else:
         print('Error', data)
 

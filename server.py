@@ -6,6 +6,7 @@ srvKey = myrsa.generateKeys()
 srvPublic = srvKey[0]
 srvPrivate = srvKey[1]
 
+sharedSecret = None
 
 def server_program():
     host = "localhost"
@@ -39,6 +40,10 @@ def server_program():
             B = (clPublic[1] ** srvPrivate[0]) % clPublic[0]
             print(B)
             conn.send(f'B {B}'.encode())
+        elif data.startswith('A '):
+            A = int(data.replace('A ', ''))
+            sharedSecret = (A ** srvPrivate[0]) % clPublic[0]
+            print(sharedSecret)
         else:
             print('Error', data)
 

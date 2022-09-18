@@ -1,4 +1,5 @@
 import socket
+import cryptocode
 import myrsa
 
 
@@ -8,9 +9,19 @@ srvPrivate = srvKey[1]
 
 sharedSecret = None
 
+def coms(conn):
+    global sharedSecret
+    while True:
+        data = conn.recv(1024)
+        data = data.decode()
+        print(data)
+        str_decoded = cryptocode.decrypt(data, sharedSecret)
+        print(str_decoded)
+
 def server_program():
+    global sharedSecret
     host = "localhost"
-    port = 8303  # initiate port no above 1024
+    port = 8304  # initiate port no above 1024
 
     server_socket = socket.socket()  # get instance
     server_socket.bind((host, port))  # bind host address and port together
@@ -42,8 +53,9 @@ def server_program():
             conn.send(f'B {B}'.encode())
         elif data.startswith('A '):
             A = int(data.replace('A ', ''))
-            sharedSecret = (A ** srvPrivate[0]) % clPublic[0]
+            sharedSecret = str((A ** srvPrivate[0]) % clPublic[0])
             print(sharedSecret)
+            coms(conn)
         else:
             print('Error', data)
 

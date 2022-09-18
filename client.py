@@ -1,8 +1,9 @@
 import socket
+import cryptocode
 import myrsa
 
 HOST = "localhost"  # The server's hostname or IP address
-PORT = 8303  # The port used by the server
+PORT = 8304  # The port used by the server
 
 clKey = myrsa.generateKeys()
 clPublic = clKey[0]
@@ -13,8 +14,21 @@ A = (clPublic[1] ** clPrivate[0]) % clPublic[0]
 
 sharedSecret = None
 
+def coms():
+    global sharedSecret
+    while True:
+        # data = s.recvs(1024)
+        # data = data.decode()
+        # print(data)
+        # str_decoded = cryptocode.decrypt(data, sharedSecret)
+        # print(str_decoded)
+        msg = input('> ')
+        msg = cryptocode.encrypt(msg, sharedSecret)
+        msg = msg.encode()
+        s.sendall(msg)
 
 def handleProtocol(data):
+    global sharedSecret
     print(f"Received {data}")
     data = data.decode()
     if data == 'ServerHello':  # Send back our key
@@ -28,8 +42,9 @@ def handleProtocol(data):
         # Send our A
         s.sendall(f'A {A}'.encode())
         # calculate sharedSecret
-        sharedSecret = (B ** clPrivate[0]) % clPublic[0]
+        sharedSecret = str((B ** clPrivate[0]) % clPublic[0])
         print(sharedSecret)
+        coms()
 
     else:
         print('Error', data)

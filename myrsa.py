@@ -6,7 +6,7 @@ def generateRandomPrimes():
     primes = primesInRange(10, 999)
     p = random.choice(primes)
     q = random.choice(primes)
-    
+
     if p == q:
         return generateRandomPrimes()
     else:
@@ -21,7 +21,7 @@ def primesInRange(x, y):
         for num in range(2, n):
             if n % num == 0:
                 isPrime = False
-                
+
         if isPrime:
             prime_list.append(n)
     return prime_list
@@ -31,18 +31,19 @@ def isPrime(e, z):
     return gcd(e, z) == 1
 
 # Generate a key pair
+# Retuned as (public, private)
 def generateKeys():
-    # Generate two different random primes 
+    # Generate two different random primes
     p, q = generateRandomPrimes()
     # p = 5
     # q = 11
 
     # Calculate RSA Module
-    N =  p * q
+    N = p * q
 
     # Calculate the euler thing we call z
     z = (p-1)*(q-1)
-    
+
     # Chose e which has to be relative prime to z (1 < e < z)
     e = 0
 
@@ -53,7 +54,7 @@ def generateKeys():
 
     # Calculate d
     d = pow(e, -1, z)
-    
+
     # print(f'p={p} q={q} e={e} d={d} N={N}')
 
     # print(f'pub ({e}, {N})')
@@ -61,14 +62,17 @@ def generateKeys():
 
     return ((e, N), (d, N))
 
-def encrypt(m , key):
+# Tests on asymmetric encryption.
+def encrypt(m, key):
     # m must be smaller than N
     e = key[0]
     N = key[1]
     return pow(m, e, N)
 
+
 def decrypt(c, key):
     return encrypt(c, key)
+
 
 if __name__ == "__main__":
     pub, prv = generateKeys()

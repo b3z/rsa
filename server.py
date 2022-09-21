@@ -2,71 +2,84 @@ import socket
 import cryptocode
 import myrsa
 
-
+# Generate a new keypair with our own RSA implementation.
 srvKey = myrsa.generateKeys()
 srvPublic = srvKey[0]
 srvPrivate = srvKey[1]
 
 sharedSecret = None
 
+# Communication function. This will be run when the key exchange is done.
+# We receive data continously, decrypt it with the sharedSecret and print it to the terminal.
+
+
 def coms(conn):
     global sharedSecret
     while True:
         data = conn.recv(1024)
         data = data.decode()
-        print(data)
+        print(data)  # This prints the encrypted version of the String.
         str_decoded = cryptocode.decrypt(data, sharedSecret)
         print(str_decoded)
 
-def server_program():
-    global sharedSecret
-    host = "localhost"
-    port = 8304  # initiate port no above 1024
 
-    server_socket = socket.socket()  # get instance
-    server_socket.bind((host, port))  # bind host address and port together
+def main():
+    global sharedSecret
+    host = "localhost"  # Our host.
+    port = 8304  # Port we listen on.
+
+    server_socket = socket.socket()
+    server_socket.bind((host, port))
 
     server_socket.listen(2)
-    conn, address = server_socket.accept()  # accept new connection
-    print("Connection from: " + str(address))
+    conn, address = server_socket.accept()
+
+    print("New connection from: " + str(address))
+
     while True:
         data = conn.recv(1024).decode()
+
         if not data:
             print('no data received')
             break
 
-        print("from connected user: " + str(data))
-        
         data = str(data)
 
-        if data == 'ClientHello':
-            sendServerHello(conn)
-        elif data.startswith('key'): # Calc B and send it.
-            clTmp = data.replace('key ', '').replace('(', '').replace(')', '').split(', ')
+        print("from client: " + data)
 
+        # On ClientHello we reply with ServerHello. Here we don't send random bytes and don't negotiate algorithms.
+        if data == 'ClientHello':
+            conn.send("ServerHello".encode())
+
+        # If we receive a public key from the client we calculate our partial result B of the DH key exchange.
+        elif data.startswith('key'):
+            # 'Parse' the key.
+            clTmp = data.replace('key ', '').replace(
+                '(', '').replace(')', '').split(', ')
+
+            # Bring key into form: (int, int) where (prime, base)
             clPublic = (int(clTmp[0]), int(clTmp[1]))
 
-            print(clPublic)
-
             B = (clPublic[1] ** srvPrivate[0]) % clPublic[0]
-            print(B)
+            print(f'send B: {B}')
+
+            # We send our partial result so the client can calculate the sharedSecret.
             conn.send(f'B {B}'.encode())
+
+        # Receive the clients partial result and calculate the sharedSecret.
         elif data.startswith('A '):
             A = int(data.replace('A ', ''))
+
             sharedSecret = str((A ** srvPrivate[0]) % clPublic[0])
-            print(sharedSecret)
+
+            print(f'Shared Secret: {sharedSecret}')
+            # Start listening for encrypted messages from the client.
             coms(conn)
         else:
-            print('Error', data)
+            print('Invalid data received: ', data)
 
-        # conn.send(data.encode())  # send data to the client
-
-    conn.close()  # close the connection
-
-
-def sendServerHello(conn):
-    conn.send("ServerHello".encode())
+    conn.close()  # close the connection when done.
 
 
 if __name__ == '__main__':
-    server_program()
+    main()

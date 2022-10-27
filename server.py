@@ -15,12 +15,16 @@ sharedSecret = None
 
 def coms(conn):
     global sharedSecret
+    print('\n')
     while True:
         data = conn.recv(1024)
         data = data.decode()
-        print(data)  # This prints the encrypted version of the String.
+        print(f'Received: {data}')  # This prints the encrypted version of the String.
+        print('\n')
+
         str_decoded = cryptocode.decrypt(data, sharedSecret)
-        print(str_decoded)
+        print(f'Decrypted: {str_decoded}')
+        print('\n\n')
 
 
 def main():
@@ -45,11 +49,13 @@ def main():
 
         data = str(data)
 
-        print("from client: " + data)
+        print("Received " + data)
 
         # On ClientHello we reply with ServerHello. Here we don't send random bytes and don't negotiate algorithms.
         if data == 'ClientHello':
             conn.send("ServerHello".encode())
+            print(f'Sent ServerHello')
+            print('\n')
 
         # If we receive a public key from the client we calculate our partial result B of the DH key exchange.
         elif data.startswith('key'):
@@ -61,10 +67,11 @@ def main():
             clPublic = (int(clTmp[0]), int(clTmp[1]))
 
             B = (clPublic[1] ** srvPrivate[0]) % clPublic[0]
-            print(f'send B: {B}')
 
             # We send our partial result so the client can calculate the sharedSecret.
             conn.send(f'B {B}'.encode())
+            print(f'Sent B {B}')
+            print('\n')
 
         # Receive the clients partial result and calculate the sharedSecret.
         elif data.startswith('A '):

@@ -21,11 +21,14 @@ sharedSecret = None
 # It takes commandline input, encrypts it with our sharedSecret. Then sends it to the server.
 def coms(s):
     global sharedSecret
+    print('\n')
     while True:
         msg = input('> ')
         msg = cryptocode.encrypt(msg, sharedSecret) # For this symmetric encryption we use an external library.
         msg = msg.encode()
         s.sendall(msg)
+        print(f'Sent {msg}')
+        print('\n')
 
 
 
@@ -39,18 +42,21 @@ def main():
         # Right now our Hello does not make much sense. Usually we would send version number and negotiable algorithms.
         # We don't because we only support one.
         s.sendall(b"ClientHello")
+        print('Sent ClientHello')
 
         # Here we continously receive data. Responding to incoming data.
         while True:
             data = s.recv(1024)
             data = data.decode()
 
-            print(f"Received {data}")
+            print(f'Received {data}')
+            input()
 
             # Send back our pubKey. It is needed for the servers calculations in the DH key exchange.
             if data == 'ServerHello':  
                 msg = f'key {clPublic}'
                 s.sendall(msg.encode())
+                print(f'Sent {msg}')
             
             # B is a partial result from the server we need to calculate the sharedSecret. 
             elif data.startswith('B '):
@@ -58,12 +64,14 @@ def main():
 
                 # Send our A which is our partial result calculated in the very beginning.
                 s.sendall(f'A {A}'.encode())
+                print(f'Sent A {A}')
 
                 # We gave the server everything it needs to calculate the sharedSecret.
                 # Now we calculate it our self.
 
                 sharedSecret = str((B ** clPrivate[0]) % clPublic[0])
                 print(f'Shared Secret: {sharedSecret}')
+
                 coms(s) # We are ready to communicate now. So we start doing so.
 
             else:

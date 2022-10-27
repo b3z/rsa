@@ -44,6 +44,7 @@ def generateKeys():
     # Calculate the euler thing we call z
     z = (p-1)*(q-1)
 
+
     # Chose e which has to be relative prime to z (1 < e < z)
     e = 0
 
